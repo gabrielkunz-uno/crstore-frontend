@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Consulta de Categorias</h1>
+    <h1>Consulta de Produtos</h1>
     <hr>
     <v-container>
       <v-row>
@@ -8,7 +8,7 @@
           <v-btn
             large
             color="primary"
-            @click="getCategories"
+            @click="getItems"
           >
             Pesquisar
             <v-icon style="margin-left: 5%">
@@ -18,7 +18,7 @@
           <v-btn
             large
             color="success"
-            to="categories/edit"
+            to="items/edit"
           >
             Cadastrar
             <v-icon style="margin-left: 5%">
@@ -31,7 +31,7 @@
     <v-container>
       <v-data-table
         :headers="headers"
-        :items="categories"
+        :items="items"
         :items-per-page="10"
         class="elevation-1"
       >
@@ -50,6 +50,9 @@
             mdi-delete
           </v-icon>
         </template>
+        <template v-slot:item.price="{ item }">
+          {{ item.promotional ? item.promotionalPrice : item.price }}
+        </template>
       </v-data-table>
     </v-container>
   </v-container>
@@ -59,7 +62,7 @@
 export default {
   layout: 'admin',
 
-  name: 'CategoriesIndexPage',
+  name: 'ItemsIndexPage',
 
   data () {
     return {
@@ -76,33 +79,43 @@ export default {
           sortable: false,
           value: 'description',
         },
+        {
+          text: 'Preço',
+          align: 'center',
+          sortable: false,
+          value: 'price'
+        },
         { text: "", value: "actions" }
       ],
-      categories: []
+      items: []
     }
   },
 
+  created () {
+    this.getItems()
+  },
+
   methods: {
-    async getCategories () {
-      this.categories = await this.$api.get('/categories').then(res => res.data);
+    async getItems () {
+      this.items = await this.$api.get('/items').then(res => res.data);
     },
 
-    async destroy (categorie) {
+    async destroy (item) {
       try {
-        if (confirm(`Deseja deletar o registro id ${categorie.id} - ${categorie.description}?`)) {
-          let response = await this.$api.post('categories/destroy', { id: categorie.id });
+        if (confirm(`Deseja deletar o registro id ${item.id} - ${item.description}?`)) {
+          let response = await this.$api.post('items/destroy', { id: item.id });
           this.$toast.success(response.message)
-          this.getCategories();
+          this.getItems();
         }
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao deletar o registro');
       }
     },
 
-    async edit (categorie) {
+    async edit (item) {
       this.$router.push({
-        name: 'admin-categories-edit',
-        params: { id: categorie.id }
+        name: 'admin-items-edit',
+        params: { id: item.id }
       });
     }
   }
