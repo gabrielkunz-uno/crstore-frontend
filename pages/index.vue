@@ -16,6 +16,7 @@
                 v-model="email"
                 outlined
                 label="E-mail"
+                prepend-inner-icon="mdi-email "
                 :rules="[rules.required, rules.email]"
               />
               <v-text-field
@@ -91,7 +92,9 @@ export default {
         return this.$toast.error(response.message)
       }
       this.$toast.success(response.message)
-      localStorage.setItem('crstore-api-token', response.token) 
+      localStorage.setItem('crstore-api-token', response.token)
+      const route = response.role === 'admin' ? 'admin' : 'store';
+      this.$router.push(route);
     },
 
     toggleShowPassword () {

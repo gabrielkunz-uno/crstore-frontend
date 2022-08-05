@@ -45,28 +45,56 @@
 
 <script>
 export default {
-  name: 'DefaultLayout',
+  name: 'AdminLayout',
+
   data () {
     return {
-      drawer: false,
+      drawer: true,
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Loja',
-          to: '/store'
+          title: 'Categorias',
+          to: '/admin/categories'
         },
         {
           icon: 'mdi-account',
-          title: 'Minha conta',
-          to: '/store/user'
+          title: 'Produtos',
+          to: '/admin/items'
         },
         {
           icon: 'mdi-cart',
-          title: 'Meus pedidos',
-          to: '/store/user/orders'
+          title: 'Métodos de Pagamento',
+          to: '/admin/payment-methods'
+        },
+        {
+          icon: 'mdi-cart',
+          title: 'Opções de Entrega',
+          to: '/admin/shipping-options'
+        },
+        {
+          icon: 'mdi-cart',
+          title: 'Status de Pedido',
+          to: '/admin/status'
         }
       ],
-      title: 'CRStore - Loja'
+      title: 'CRStore - Admin'
+    }
+  },
+
+  async created () {
+    await this.validateLogin();
+  },
+
+  methods: {
+    async validateLogin () {
+      const token = localStorage.getItem('crstore-api-token') || '';
+      let response = await this.$axios.$get('http://localhost:3333/users/validate-token', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.type !== 'success' || response.data?.role !== 'admin') {
+        this.$toast.info('Você não tem permissão para acessar esse recurso');
+        return this.$router.push({ name: 'index' });
+      } 
     }
   }
 }
