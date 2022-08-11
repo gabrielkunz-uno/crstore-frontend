@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Cadastro de Categorias</h1>
+    <h1>Cadastro de Opções de Entrega</h1>
     <hr>
     <v-form v-model="valid">
       <v-container>
@@ -9,7 +9,7 @@
             cols="3"
           >
             <v-text-field
-              v-model="categorie.id"
+              v-model="shippingOption.id"
               placeholder="Código"
               label="Código"
               disabled
@@ -20,7 +20,7 @@
             cols="3"
           >
              <v-switch
-              v-model="categorie.inactive"
+              v-model="shippingOption.inactive"
               label="Inativar"
             ></v-switch>
           </v-col>
@@ -28,12 +28,22 @@
         <v-row>
           <v-col>
             <v-text-field
-              v-model="categorie.description"
+              v-model="shippingOption.description"
               placeholder="Descrição"
               label="Descrição"
               required
               :rules="rule"
               outlined
+            />
+          </v-col>
+          <v-col>
+            <v-select
+              v-model="shippingOption.type"
+              placeholder="Tipo"
+              label="Tipo"
+              required
+              outlined
+              :items="types"
             />
           </v-col>
         </v-row>
@@ -51,7 +61,7 @@
       <v-btn
         color="error"
         large
-        to="/admin/categories"
+        to="/admin/shipping-options"
       >
         Cancelar
       </v-btn>
@@ -63,18 +73,23 @@
 export default {
   layout: 'admin',
   
-  name: 'CategoriesEditPage',
+  name: 'shippingOptionsEditPage',
 
   data () {
     return {
       valid: false,
-      categorie: {
+      shippingOption: {
         id: null,
         description: null,
+        type: 'delivery',
         inactive: false
       },
       rule: [
         v => !!v || 'Esse campo é obrigatório'
+      ],
+      types: [
+        { text: 'Entrega', value: 'delivery' },
+        { text: 'Retirar na Loja', value: 'pickup' }
       ]
     }
   },
@@ -92,25 +107,25 @@ export default {
           return this.$toast.warning('Preencha todos os campos obrigatórios')
         }
 
-        let categorie = {
-          description: this.categorie.description,
-          inactive: this.categorie.inactive
+        let shippingOption = {
+          description: this.shippingOption.description,
+          inactive: this.shippingOption.inactive
         };
 
-        let id = this.categorie.id || '';
-        let response = await this.$api.post(`/categories/persist/${id}`, categorie);
+        let id = this.shippingOption.id || '';
+        let response = await this.$api.post(`/shipping-options/persist/${id}`, shippingOption);
         if (response.type !== 'success') {
           return this.$toast.error(response.message);
         }
         this.$toast.success(response.message)
-        return this.$router.push('/admin/categories');
+        return this.$router.push('/admin/shipping-options');
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao realizar o cadastro!');
       }
     },
 
     async getById (id) {
-      this.categorie = await this.$api.get(`/categories/${id}`).then(res => res.data);
+      this.shippingOption = await this.$api.get(`/shipping-options/${id}`).then(res => res.data);
     }
   }
 }

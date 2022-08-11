@@ -64,9 +64,36 @@ export default {
           icon: 'mdi-cart',
           title: 'Meus pedidos',
           to: '/store/user/orders'
+        },
+        {
+          icon: 'mdi-map-marker',
+          title: 'Meus endereços',
+          to: '/store/user/addresses'
         }
       ],
       title: 'CRStore - Loja'
+    }
+  },
+
+  async created () {
+    await this.validateLogin();
+  },
+
+  methods: {
+    async validateLogin () {
+      const token = localStorage.getItem('crstore-api-token') || '';
+      let response = await this.$axios.$get('http://localhost:3333/users/validate-token', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.type !== 'success') {
+        this.$toast.info('Você não tem permissão para acessar esse recurso');
+        return this.$router.push('/logout');
+      } 
+      this.items.push({
+        icon: 'mdi-logout',
+        title: 'Sair',
+        to: '/logout'
+      });
     }
   }
 }

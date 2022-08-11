@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Cadastro de Categorias</h1>
+    <h1>Cadastro de Status do Pedido</h1>
     <hr>
     <v-form v-model="valid">
       <v-container>
@@ -9,7 +9,7 @@
             cols="3"
           >
             <v-text-field
-              v-model="categorie.id"
+              v-model="status.id"
               placeholder="Código"
               label="Código"
               disabled
@@ -20,7 +20,7 @@
             cols="3"
           >
              <v-switch
-              v-model="categorie.inactive"
+              v-model="status.inactive"
               label="Inativar"
             ></v-switch>
           </v-col>
@@ -28,11 +28,19 @@
         <v-row>
           <v-col>
             <v-text-field
-              v-model="categorie.description"
+              v-model="status.description"
               placeholder="Descrição"
               label="Descrição"
               required
               :rules="rule"
+              outlined
+            />
+          </v-col>
+          <v-col>
+            <input
+              type="color"
+              v-model="status.color"
+              required
               outlined
             />
           </v-col>
@@ -51,7 +59,7 @@
       <v-btn
         color="error"
         large
-        to="/admin/categories"
+        to="/admin/status"
       >
         Cancelar
       </v-btn>
@@ -63,19 +71,20 @@
 export default {
   layout: 'admin',
   
-  name: 'CategoriesEditPage',
+  name: 'StatusEditPage',
 
   data () {
     return {
       valid: false,
-      categorie: {
+      status: {
         id: null,
         description: null,
+        color: null,
         inactive: false
       },
       rule: [
         v => !!v || 'Esse campo é obrigatório'
-      ]
+      ],
     }
   },
 
@@ -92,25 +101,26 @@ export default {
           return this.$toast.warning('Preencha todos os campos obrigatórios')
         }
 
-        let categorie = {
-          description: this.categorie.description,
-          inactive: this.categorie.inactive
+        let status = {
+          description: this.status.description,
+          inactive: this.status.inactive,
+          color: this.status.color
         };
 
-        let id = this.categorie.id || '';
-        let response = await this.$api.post(`/categories/persist/${id}`, categorie);
+        let id = this.status.id || '';
+        let response = await this.$api.post(`/status/persist/${id}`, status);
         if (response.type !== 'success') {
           return this.$toast.error(response.message);
         }
         this.$toast.success(response.message)
-        return this.$router.push('/admin/categories');
+        return this.$router.push('/admin/status');
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao realizar o cadastro!');
       }
     },
 
     async getById (id) {
-      this.categorie = await this.$api.get(`/categories/${id}`).then(res => res.data);
+      this.status = await this.$api.get(`/status/${id}`).then(res => res.data);
     }
   }
 }

@@ -36,7 +36,7 @@
               Ainda não tem uma conta? 
               <span 
                 style="font-weight: bold; cursor: pointer;"
-                @click="$router.push('/register')" 
+                @click="$router.push('/signup')" 
               >
                 Registre-se
               </span>

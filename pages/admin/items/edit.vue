@@ -53,14 +53,6 @@
           <v-col
             cols="3"
           >
-            <v-switch
-              v-model="item.promotional"
-              label="Em promoção"
-            ></v-switch>
-          </v-col>
-          <v-col
-            cols="3"
-          >
             <v-text-field
               :disabled="!item.promotional"
               v-model="item.promotionalPrice"
@@ -71,17 +63,72 @@
               outlined
             />
           </v-col>
+          <v-col
+            cols="3"
+          >
+            <v-switch
+              v-model="item.promotional"
+              label="Em promoção"
+            ></v-switch>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="3"
+          >
+            <v-text-field
+              v-model="item.stockAvailable"
+              placeholder="Estoque"
+              label="Estoque"
+              required
+              v-mask="['#.####', '##.####', '###.####', '####.####', '#####.####']"
+              outlined
+            />
+          </v-col>
+          <v-col
+            cols="3"
+          >
+            <v-autocomplete
+              v-model="item.categoryId"
+              placeholder="Categoria"
+              label="Categoria"
+              required
+              :items="categories"
+              item-text="description"
+              item-value="id"
+              outlined
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-textarea
+              v-model="item.additionalInfo"
+              placeholder="Observações"
+              label="Observações"
+              required
+              outlined
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-img 
+              :src="item.imageURL"
+              style="height: 300px; width: 300px; border: 1px solid white; border-radius: 5px;"
+              alt="Imagem do Produto"
+            ></v-img>
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="item.imageURL"
+              placeholder="URL Imagem"
+              label="URL Imagem"
+              outlined
+            />
+          </v-col>
         </v-row>
       </v-container>
-        // description,
-        // additionalInfo,
-        // price, --
-        // promotional,
-        // promotionalPrice,
-        // imageURL,
-        // stockAvailable,
-        // inactive,
-        // categoryId
     </v-form>
     <v-container>
       <v-btn
@@ -115,15 +162,24 @@ export default {
       item: {
         id: null,
         description: null,
-        inactive: false
+        inactive: false,
+        price: null,
+        promotional: false,
+        promotionalPrice: null,
+        stockAvailable: null,
+        additionalInfo: null,
+        imageURL: null,
+        categoryId: null
       },
       rule: [
         v => !!v || 'Esse campo é obrigatório'
-      ]
+      ],
+      categories: []
     }
   },
 
   created () {
+    this.getCategories();
     if (this.$route?.params?.id) {
       this.getById(this.$route.params.id)
     }
@@ -138,12 +194,22 @@ export default {
 
         let item = {
           description: this.item.description,
-          inactive: this.item.inactive
+          inactive: this.item.inactive,
+          price: this.item.price,
+          promotional: this.item.promotional,
+          promotionalPrice: this.item.promotionalPrice,
+          stockAvailable: this.item.stockAvailable,
+          additionalInfo: this.item.additionalInfo,
+          imageURL: this.item.imageURL,
+          categoryId: this.item.categoryId
         };
 
         let id = this.item.id || '';
-        await this.$api.post(`/items/persist/${id}`, item);
-        this.$toast.success('Cadastro realizado com sucesso!');
+        let response = await this.$api.post(`/items/persist/${id}`, item);
+        if (response.type !== 'success') {
+          return this.$toast.error(response.message);
+        }
+        this.$toast.success(response.message)
         return this.$router.push('/admin/items');
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao realizar o cadastro!');
@@ -152,6 +218,10 @@ export default {
 
     async getById (id) {
       this.item = await this.$api.get(`/items/${id}`).then(res => res.data);
+    },
+
+    async getCategories() {
+      this.categories = await this.$api.get('/categories').then(res => res.data)
     }
   }
 }

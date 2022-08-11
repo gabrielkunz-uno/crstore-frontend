@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Consulta de Categorias</h1>
+    <h1>Consulta de Status do Pedido</h1>
     <hr>
     <v-container>
       <v-row>
@@ -8,7 +8,7 @@
           <v-btn
             large
             color="primary"
-            @click="getCategories"
+            @click="getStatus"
           >
             Pesquisar
             <v-icon style="margin-left: 5%">
@@ -18,7 +18,7 @@
           <v-btn
             large
             color="success"
-            to="categories/edit"
+            to="status/edit"
           >
             Cadastrar
             <v-icon style="margin-left: 5%">
@@ -31,7 +31,7 @@
     <v-container>
       <v-data-table
         :headers="headers"
-        :items="categories"
+        :items="status"
         :items-per-page="10"
         class="elevation-1"
       >
@@ -59,7 +59,7 @@
 export default {
   layout: 'admin',
 
-  name: 'CategoriesIndexPage',
+  name: 'StatusIndexPage',
 
   data () {
     return {
@@ -78,35 +78,35 @@ export default {
         },
         { text: "", value: "actions" }
       ],
-      categories: []
+      status: []
     }
   },
 
   created () {
-    this.getCategories()
+    this.getStatus()
   },
 
   methods: {
-    async getCategories () {
-      this.categories = await this.$api.get('/categories').then(res => res.data);
+    async getStatus () {
+      this.status = await this.$api.get('/status').then(res => res.data);
     },
 
-    async destroy (categorie) {
+    async destroy (status) {
       try {
-        if (confirm(`Deseja deletar o registro id ${categorie.id} - ${categorie.description}?`)) {
-          let response = await this.$api.post('categories/destroy', { id: categorie.id });
+        if (confirm(`Deseja deletar o registro id ${status.id} - ${status.description}?`)) {
+          let response = await this.$api.post('status/destroy', { id: status.id });
           this.$toast.success(response.message)
-          this.getCategories();
+          this.getStatus();
         }
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao deletar o registro');
       }
     },
 
-    async edit (categorie) {
+    async edit (status) {
       this.$router.push({
-        name: 'admin-categories-edit',
-        params: { id: categorie.id }
+        name: 'admin-status-edit',
+        params: { id: status.id }
       });
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Consulta de Categorias</h1>
+    <h1>Consulta de Métodos de Pagamento</h1>
     <hr>
     <v-container>
       <v-row>
@@ -8,7 +8,7 @@
           <v-btn
             large
             color="primary"
-            @click="getCategories"
+            @click="getPaymentMethods"
           >
             Pesquisar
             <v-icon style="margin-left: 5%">
@@ -18,7 +18,7 @@
           <v-btn
             large
             color="success"
-            to="categories/edit"
+            to="payment-methods/edit"
           >
             Cadastrar
             <v-icon style="margin-left: 5%">
@@ -31,7 +31,7 @@
     <v-container>
       <v-data-table
         :headers="headers"
-        :items="categories"
+        :items="paymentMethods"
         :items-per-page="10"
         class="elevation-1"
       >
@@ -59,7 +59,7 @@
 export default {
   layout: 'admin',
 
-  name: 'CategoriesIndexPage',
+  name: 'PaymentMethodsIndexPage',
 
   data () {
     return {
@@ -78,35 +78,35 @@ export default {
         },
         { text: "", value: "actions" }
       ],
-      categories: []
+      paymentMethods: []
     }
   },
 
   created () {
-    this.getCategories()
+    this.getPaymentMethods()
   },
 
   methods: {
-    async getCategories () {
-      this.categories = await this.$api.get('/categories').then(res => res.data);
+    async getPaymentMethods () {
+      this.paymentMethods = await this.$api.get('/payment-methods').then(res => res.data);
     },
 
-    async destroy (categorie) {
+    async destroy (paymentMethod) {
       try {
-        if (confirm(`Deseja deletar o registro id ${categorie.id} - ${categorie.description}?`)) {
-          let response = await this.$api.post('categories/destroy', { id: categorie.id });
+        if (confirm(`Deseja deletar o registro id ${paymentMethod.id} - ${paymentMethod.description}?`)) {
+          let response = await this.$api.post('payment-methods/destroy', { id: paymentMethod.id });
           this.$toast.success(response.message)
-          this.getCategories();
+          this.getPaymentMethods();
         }
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao deletar o registro');
       }
     },
 
-    async edit (categorie) {
+    async edit (paymentMethod) {
       this.$router.push({
-        name: 'admin-categories-edit',
-        params: { id: categorie.id }
+        name: 'admin-payment-methods-edit',
+        params: { id: paymentMethod.id }
       });
     }
   }

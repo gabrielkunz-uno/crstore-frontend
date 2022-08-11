@@ -93,8 +93,13 @@ export default {
       });
       if (response.type !== 'success' || response.data?.role !== 'admin') {
         this.$toast.info('Você não tem permissão para acessar esse recurso');
-        return this.$router.push({ name: 'index' });
+        return this.$router.push('/logout');
       } 
+      this.items.push({
+        icon: 'mdi-logout',
+        title: 'Sair',
+        to: '/logout'
+      });
     }
   }
 }

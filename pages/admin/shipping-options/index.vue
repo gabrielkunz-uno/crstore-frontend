@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Consulta de Categorias</h1>
+    <h1>Consulta de Opções de Entrega</h1>
     <hr>
     <v-container>
       <v-row>
@@ -8,7 +8,7 @@
           <v-btn
             large
             color="primary"
-            @click="getCategories"
+            @click="getShippingOptions"
           >
             Pesquisar
             <v-icon style="margin-left: 5%">
@@ -18,7 +18,7 @@
           <v-btn
             large
             color="success"
-            to="categories/edit"
+            to="shipping-options/edit"
           >
             Cadastrar
             <v-icon style="margin-left: 5%">
@@ -31,7 +31,7 @@
     <v-container>
       <v-data-table
         :headers="headers"
-        :items="categories"
+        :items="shippingOptions"
         :items-per-page="10"
         class="elevation-1"
       >
@@ -59,7 +59,7 @@
 export default {
   layout: 'admin',
 
-  name: 'CategoriesIndexPage',
+  name: 'ShippingOptionsIndexPage',
 
   data () {
     return {
@@ -78,35 +78,35 @@ export default {
         },
         { text: "", value: "actions" }
       ],
-      categories: []
+      shippingOptions: []
     }
   },
 
   created () {
-    this.getCategories()
+    this.getShippingOptions()
   },
 
   methods: {
-    async getCategories () {
-      this.categories = await this.$api.get('/categories').then(res => res.data);
+    async getShippingOptions () {
+      this.shippingOptions = await this.$api.get('/shipping-options').then(res => res.data);
     },
 
-    async destroy (categorie) {
+    async destroy (shippingOption) {
       try {
-        if (confirm(`Deseja deletar o registro id ${categorie.id} - ${categorie.description}?`)) {
-          let response = await this.$api.post('categories/destroy', { id: categorie.id });
+        if (confirm(`Deseja deletar o registro id ${shippingOption.id} - ${shippingOption.description}?`)) {
+          let response = await this.$api.post('shipping-options/destroy', { id: shippingOption.id });
           this.$toast.success(response.message)
-          this.getCategories();
+          this.getShippingOptions();
         }
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao deletar o registro');
       }
     },
 
-    async edit (categorie) {
+    async edit (shippingOption) {
       this.$router.push({
-        name: 'admin-categories-edit',
-        params: { id: categorie.id }
+        name: 'admin-shipping-options-edit',
+        params: { id: shippingOption.id }
       });
     }
   }

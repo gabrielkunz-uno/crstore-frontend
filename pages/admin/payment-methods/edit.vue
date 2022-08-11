@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Cadastro de Categorias</h1>
+    <h1>Cadastro de Métodos de Pagamento</h1>
     <hr>
     <v-form v-model="valid">
       <v-container>
@@ -9,7 +9,7 @@
             cols="3"
           >
             <v-text-field
-              v-model="categorie.id"
+              v-model="paymentMethod.id"
               placeholder="Código"
               label="Código"
               disabled
@@ -20,7 +20,7 @@
             cols="3"
           >
              <v-switch
-              v-model="categorie.inactive"
+              v-model="paymentMethod.inactive"
               label="Inativar"
             ></v-switch>
           </v-col>
@@ -28,7 +28,7 @@
         <v-row>
           <v-col>
             <v-text-field
-              v-model="categorie.description"
+              v-model="paymentMethod.description"
               placeholder="Descrição"
               label="Descrição"
               required
@@ -51,7 +51,7 @@
       <v-btn
         color="error"
         large
-        to="/admin/categories"
+        to="/admin/payment-methods"
       >
         Cancelar
       </v-btn>
@@ -63,12 +63,12 @@
 export default {
   layout: 'admin',
   
-  name: 'CategoriesEditPage',
+  name: 'PaymentMethodsEditPage',
 
   data () {
     return {
       valid: false,
-      categorie: {
+      paymentMethod: {
         id: null,
         description: null,
         inactive: false
@@ -92,25 +92,25 @@ export default {
           return this.$toast.warning('Preencha todos os campos obrigatórios')
         }
 
-        let categorie = {
-          description: this.categorie.description,
-          inactive: this.categorie.inactive
+        let paymentMethod = {
+          description: this.paymentMethod.description,
+          inactive: this.paymentMethod.inactive
         };
 
-        let id = this.categorie.id || '';
-        let response = await this.$api.post(`/categories/persist/${id}`, categorie);
+        let id = this.paymentMethod.id || '';
+        let response = await this.$api.post(`/payment-methods/persist/${id}`, paymentMethod);
         if (response.type !== 'success') {
           return this.$toast.error(response.message);
         }
         this.$toast.success(response.message)
-        return this.$router.push('/admin/categories');
+        return this.$router.push('/admin/payment-methods');
       } catch (error) {
         this.$toast.error('Ocorreu um erro ao realizar o cadastro!');
       }
     },
 
     async getById (id) {
-      this.categorie = await this.$api.get(`/categories/${id}`).then(res => res.data);
+      this.paymentMethod = await this.$api.get(`/payment-methods/${id}`).then(res => res.data);
     }
   }
 }
