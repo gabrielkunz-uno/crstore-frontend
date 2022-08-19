@@ -28,6 +28,19 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
+      <v-spacer></v-spacer>
+      <v-btn
+        class="mx-2"
+        fab
+        dark
+        small
+        color="cyan"
+        to="/store/cart"
+      >
+        <v-icon dark>
+          mdi-cart
+        </v-icon>
+      </v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
